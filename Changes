@@ -1,5 +1,8 @@
 Revision history for MKDoc::Core 
 
+0.5 Wed Jun 16 13:17:27 2004
+    - Memoized some slow MKDoc::Core::Language methods
+
 0.4 Fri Apr 16 13:02:38 2004
     - Added MKDoc::Core::site_dir()
     - Added MKDoc::Core::core_dir()

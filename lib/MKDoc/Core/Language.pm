@@ -105,9 +105,12 @@ sub new
 {
     my $class = shift;
     my $lang  = shift;
-    $::MKD_CORE_LANGUAGES || _mkd_core_languages();
+    $::MKD_CORE_LANGUAGES          || _mkd_core_languages();
     $::MKD_CORE_LANGUAGES->{$lang} || return;
-    return bless \$lang, $class;
+
+    $::MKD_CORE_LANGUAGES_OBJ ||= {};
+    $::MKD_CORE_LANGUAGES_OBJ->{$lang} ||= bless \$lang, $class;
+    return $::MKD_CORE_LANGUAGES_OBJ->{$lang}; 
 }
 
 
@@ -127,13 +130,17 @@ For all languages.
 sub as_hash
 {
    my $class = shift;
-   my @list  = $class->code_list();
-   my %res   = map {
-	my $language = MKDoc::Core::Language->new ($_);
-	( $language->code() => $language->label() );
-    } @list;
+   $::MKD_LANGUAGE_AS_HASH ||= do {
+       my @list  = $class->code_list();
+       my %res   = map {
+         my $language = MKDoc::Core::Language->new ($_);
+  	 ( $language->code() => $language->label() );
+       } @list;
 
-    return wantarray ? %res : \%res;
+       \%res;
+    };
+
+    return wantarray ? %{$::MKD_LANGUAGE_AS_HASH} : $::MKD_LANGUAGE_AS_HASH;
 }
 
 
@@ -208,8 +215,12 @@ value of their associated label.
 sub code_list
 {
     $::MKD_CORE_LANGUAGES || _mkd_core_languages();
-    return sort { $::MKD_CORE_LANGUAGES->{$a} cmp $::MKD_CORE_LANGUAGES->{$b} }
-           keys %{$::MKD_CORE_LANGUAGES};
+    $::MKD_CORE_LANGUAGE_CODE_LIST ||= [
+           sort { $::MKD_CORE_LANGUAGES->{$a} cmp $::MKD_CORE_LANGUAGES->{$b} }
+           keys %{$::MKD_CORE_LANGUAGES}
+    ];
+
+    return @{$::MKD_CORE_LANGUAGE_CODE_LIST};
 }
 
 
