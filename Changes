@@ -1,5 +1,13 @@
 Revision history for MKDoc::Core 
 
+0.6 Tue Jul 13 15:21:42 2004
+    - Fixed CGI redirects not working on my box
+    - Added MKDoc::Core::SessionPlugin
+    - MKDoc::Core::Language objects are now string-overloaded
+    - Fixed a path_info bug in MKDoc::Core::Request::self_url()
+    - Renamed MKDoc::Core::Request::self_url to 'self_uri'
+    - Fixed MKDoc::Core::Plugin throwing warnings
+ 
 0.5 Wed Jun 16 13:17:27 2004
     - Memoized some slow MKDoc::Core::Language methods
 
@@ -31,6 +39,3 @@ Revision history for MKDoc::Core
     - Changed MKDoc 2.02 to MKDoc::Core 0.1
     - Fixed numerous documentation issues
     - Added experimental Apache 2 /mod_perl 1.99 config
-
-2.00 Tue Mar  2 17:07:31 2004
-    - Initial release

@@ -229,6 +229,10 @@ Outputs the response to STDOUT.
 sub out
 {
     my $self = shift;
+    $self->{'.sent'} && do {
+        warn $self . "::out() called more than once?";
+    };
+
     my $meth = $ENV{REQUEST_METHOD} || 'GET';
     $meth =~ /HEAD/ ?
         print $self->HEAD() :
@@ -238,9 +242,25 @@ sub out
     $ENV{MOD_PERL} and do {
         my $r = Apache->request();
         $r->status (DONE);
-    }
+    };
+
+    $self->{'.sent'} = 1;
 }
 
+
+sub redirect
+{
+    my $self = shift;
+    $self->{'.sent'} && do {
+        warn $self . "::out() called more than once?";
+    };
+   
+    my $uri  = shift;
+    my $req  = MKDoc::Core::Request->instance();
+    print $req->redirect ($uri);
+
+    $self->{'.sent'} = 1;
+}
 
 
 1;

@@ -34,6 +34,15 @@ The two file are the following:
 package MKDoc::Core::Language;
 use strict;
 use warnings;
+use overload
+    '""' => \&as_string;
+
+
+sub as_string
+{
+    my $self = shift;
+    return $self->code();
+}
 
 
 sub _mkd_core_languages
@@ -262,7 +271,7 @@ sub align_opposite
     my $self = shift;
     my $code = $self->code;
     $::MKD_CORE_LANGUAGES_RTL || _mkd_core_languages_rtl();
-    return $::MKD_CORE_LANGUAGES_RTL()->{$code} ? 'left' : 'right';
+    return $::MKD_CORE_LANGUAGES_RTL->{$code} ? 'left' : 'right';
 }
 
 
@@ -283,6 +292,13 @@ sub dir
     my $code = $self->code;
     $::MKD_CORE_LANGUAGES_RTL || _mkd_core_languages_rtl();
     return $::MKD_CORE_LANGUAGES_RTL->{$code} ? 'rtl' : 'ltr';
+}
+
+
+sub direction
+{
+    my $self = shift;
+    return $self->dir (@_);
 }
 
 

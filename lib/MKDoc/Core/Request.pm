@@ -48,14 +48,13 @@ sub clone
 }
 
 
-sub self_url
+sub self_uri
 {
     my $self = shift;
-    my %opt  = map { "-" . $_ => 1 } @_;
+    my %opt  = map { "-" . $_ => 1 } ( @_, qw /path_info query/ );
     $opt{relative}  ||= 0;
 
-    # remove the blah:80 like URIs
-    my $url  = $self->url (%opt);
+    my $url  = $self->url (\%opt);
     $url =~ s/(.*?\:\/\/(?:.*?\@)?)(.*):80(?!\d)(.*)/$1$2$3/
         if ($url =~ /(.*?\:\/\/(?:.*?\@)?)(.*):80(?!\d)(.*)/);
 
@@ -231,17 +230,18 @@ sub param
 }
 
 
-
 # redirect() doesn't seem to work with CGI.pm 2.89
 # this should fix for this particular version.
 sub redirect
 {
     my $self = shift;
-    my $uri  = shift;
-    my $res  = '';
-    $res .= "Status: 302 Moved\n";
-    $res .= "Location: $uri\n\n";
-    return $res;
+    $CGI::VERSION == 2.89 ? return do {
+        my $uri  = shift;
+        my $res  = '';
+        $res .= "Status: 302 Moved\n";
+        $res .= "Location: $uri\n\n";
+        $res;
+    } : return $self->SUPER::redirect (@_);
 }
 
 

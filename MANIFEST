@@ -16,6 +16,7 @@ lib/MKDoc/Core/Plugin/Resources.pm
 lib/MKDoc/Core/Request.pm
 lib/MKDoc/Core/ResourceFinder.pm
 lib/MKDoc/Core/Response.pm
+lib/MKDoc/Core/SessionPlugin.pm
 lib/MKDoc/Core/Site/httpd2_conf/httpd-access-control.conf
 lib/MKDoc/Core/Site/httpd2_conf/httpd-aliases.conf
 lib/MKDoc/Core/Site/httpd2_conf/httpd-authenticate.conf
@@ -35,6 +36,7 @@ lib/MKDoc/Core/Site/httpd_conf/httpd-fixup.conf
 lib/MKDoc/Core/Site/httpd_conf/httpd-init.conf
 lib/MKDoc/Core/Site/httpd_conf/httpd.conf
 lib/MKDoc/resources/css/core.css
+lib/MKDoc/resources/images/favicon.ico
 lib/MKDoc/resources/images/mkdoc.gif
 lib/MKDoc/resources/misc/mime.types
 lib/MKDoc/resources/templates/core/it_worked/en.html

@@ -125,11 +125,11 @@ sub would_activate
     # let's lie about what the path_info is...
     my $path_info = $self->location();
 
-    local *MKDoc::Core::Response::path_info;
-    *MKDoc::Core::Response::path_info = sub { $path_info };
+    local *MKDoc::Core::Request::path_info;
+    *MKDoc::Core::Request::path_info = sub { $path_info };
 
     # go through plugin list and see if $self activates
-    for (MKDoc->plugin_list()) { return 1 if ($_ eq $class and $self->activate()) }
+    for (MKDoc::Core->plugin_list()) { return 1 if ($_ eq $class and $self->activate()) }
 
     return;
 }
@@ -249,8 +249,7 @@ sub http_get
 }
 
 
-
-=head2 $self->http_get();
+=head2 $self->http_post();
 
 Processes an HTTP POST request.
 Defaults http_get() by default.
@@ -275,7 +274,9 @@ PATH_INFO.
 sub activate
 {
     my $self = shift;
-    return $self->location() eq $self->request()->path_info();
+    my $location  = $self->location()             || '';
+    my $path_info = $self->request()->path_info() || '';
+    return $location eq $path_info;
 }
 
 
@@ -588,8 +589,6 @@ sub env_value
 }
 
 
-
-
 =head2 $self->template_path();
 
 Returns the template path relative to Petal @BASE_DIR directories.
@@ -680,7 +679,7 @@ sub return_uri
     return $req->param ('return_uri') || $ENV{HTTP_REFERER} || do {
         $req->path_info ('/');
         $req->delete ($_) for ($req->param());
-        $req->self_url();
+        $req->self_uri();
     };
 }
 
