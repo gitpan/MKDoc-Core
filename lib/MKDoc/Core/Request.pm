@@ -53,10 +53,28 @@ sub self_uri
     my $self = shift;
     my %opt  = map { "-" . $_ => 1 } ( @_, qw /path_info query/ );
     $opt{relative}  ||= 0;
+    return $self->url (\%opt);
+}
 
-    my $url  = $self->url (\%opt);
-    $url =~ s/(.*?\:\/\/(?:.*?\@)?)(.*):80\d?\d?(?!\d)(.*)/$1$2$3/
-        if ($url =~ /(.*?\:\/\/(?:.*?\@)?)(.*):80\d?\d?(?!\d)(.*)/);
+
+sub url 
+{
+    my $self = shift;
+    my $url  = $self->SUPER::url (@_);
+
+    # httpd.conf example:
+    #   SetEnv MKD__URL_PORT_STRIP "80,8080"
+    #   SetEnv MKD__URL_PORT_STRIP_REGEX  "80\d*"
+    my $port_strip = $ENV{MKD__URL_PORT_STRIP} || '';
+    my $port_strip_regex = $ENV{MKD__URL_PORT_STRIP_REGEX} || '';
+
+    # change commas to regex alternator
+    $port_strip =~ tr/,/|/;
+    my $port_strip_str = $port_strip || $port_strip_regex || '80';
+
+    # assumes url always has a port specifier
+    $url =~ s/(.*?\:\/\/(?:.*?\@)?)(.*):(?:${port_strip_str})(?!\d)(.*)/$1$2$3/
+        if ($url =~ /(.*?\:\/\/(?:.*?\@)?)(.*):${port_strip_str}(?!\d)(.*)/);
 
     return $url;
 }
@@ -236,7 +254,7 @@ __END__
 
 Copyright 2003 - MKDoc Holdings Ltd.
 
-Author: Jean-Michel Hiver <jhiver@mkdoc.com>
+Author: Jean-Michel Hiver
 
 This module is free software and is distributed under the same license as Perl
 itself. Use it at your own risk.
@@ -244,7 +262,7 @@ itself. Use it at your own risk.
 
 =head1 SEE ALSO
 
-  Petal: http://search.cpan.org/author/JHIVER/Petal/
+  L<Petal> TAL for perl
   MKDoc: http://www.mkdoc.com/
 
 Help us open-source MKDoc. Join the mkdoc-modules mailing list:

@@ -1,5 +1,9 @@
 Revision history for MKDoc::Core 
 
+0.10 Wed Sep 29 12:55:00 2004
+    - url() method that calls SUPER::url()
+    - Applied patch from Charlie Garrison to make port stripping configurable
+
 0.9 Mon Sep  6 14:33:32 2004
     - Made it so that :80xx are stripped from URIs
     - Fixed content negotiation bug with Opera

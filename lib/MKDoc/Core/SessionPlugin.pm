@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------------------------
 # MKDoc::Core::SessionPlugin
 # -------------------------------------------------------------------------------------
-# Author : Jean-Michel Hiver <jhiver@mkdoc.com>.
+# Author : Jean-Michel Hiver.
 # Copyright : (c) MKDoc Holdings Ltd, 2003
 #
 # This object / and plug-in attempts to set a session on the target
