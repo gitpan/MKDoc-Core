@@ -92,7 +92,7 @@ use strict;
 use warnings;
 
 
-our $VERSION = '0.8';
+our $VERSION = '0.9';
 
 
 sub process
@@ -111,11 +111,11 @@ sub main
     my @plugin = $class->plugin_list();
 
     local $::MKD_Current_Plugin;
-    foreach my $pkg (@plugin)
-    {
-        main_import ($pkg);
-        $::MKD_Current_Plugin = $pkg;
+    for my $pkg (@plugin) { main_import ($pkg) }
 
+    for my $pkg (@plugin)
+    {
+        $::MKD_Current_Plugin = $pkg;
         my $ret = $pkg->main;
         last if (defined $ret and $ret eq 'TERMINATE');
     }

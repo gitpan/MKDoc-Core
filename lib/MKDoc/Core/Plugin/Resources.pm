@@ -29,6 +29,7 @@ use MKDoc::Core::ResourceFinder;
 use base qw /MKDoc::Core::Plugin/;
 use strict;
 use warnings;
+use HTTP::Date;
 
 
 sub activate
@@ -56,6 +57,18 @@ sub render
 {
     my $self = shift;
     return $self->{'.data'};
+}
+
+
+sub HTTP_Last_Modified
+{
+    my $self = shift;
+    my $file = $self->{'.file'};
+    my ( $dev, $ino, $mode, $nlink, $uid,
+         $gid, $rdev, $size, $atime, $mtime,
+         $ctime,$blksize,$blocks ) = stat ($file);
+
+    return HTTP::Date::time2str ($mtime);
 }
 
 
@@ -102,8 +115,6 @@ sub HTTP_Content_Type
     # no match is found, return generic default.
     return 'application/octet-stream';
 }
-
-
 1;
 
 

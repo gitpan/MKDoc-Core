@@ -1,5 +1,12 @@
 Revision history for MKDoc::Core 
 
+0.9 Mon Sep  6 14:33:32 2004
+    - Made it so that :80xx are stripped from URIs
+    - Fixed content negotiation bug with Opera
+    - Added Content-Length and ETag to response headers
+    - Added Last-Modified headers for resource files
+    - Added MKDoc::Core::Request::param_checked()
+
 0.8 Mon Aug  9 12:47:55 2004
     - Added MKDoc::Core::Request::delete_all_fast()
     - Updated MKDoc::Core::Request::param()

@@ -14,10 +14,11 @@ package MKDoc::Core::Response;
 use Apache;
 use Apache::Constants qw/:common/;
 use MKDoc::Core::Request;
+use Digest::MD5;
 use strict;
 use warnings;
 our $AUTOLOAD;
-
+use Encode;
 
 
 =head1 API
@@ -108,13 +109,18 @@ sub HEAD
     my %hash = ();
     my $status = $self->Status() || '200 OK';
     $hash{'-status'} = $status;
-    
+
     foreach my $key (sort $self->header_keys())
     {
         my $val = $self->{$key};
         $hash{"-$key"} = $val;
     }
-    
+
+    my $body = $self->Body();
+    Encode::_utf8_off ($body);
+    $hash{"-content_length"} = length ($body);
+    $hash{"-etag"}           = Digest::MD5::md5_hex ($body);
+
     return $req->header (%hash);
 }
 
@@ -234,9 +240,7 @@ sub out
     };
 
     my $meth = $ENV{REQUEST_METHOD} || 'GET';
-    $meth =~ /HEAD/ ?
-        print $self->HEAD() :
-        print $self->GET();
+    $meth =~ /HEAD/ ? print $self->HEAD() : print $self->GET();
 
     # explicitly tell Apache that we're done
     $ENV{MOD_PERL} and do {

@@ -371,19 +371,17 @@ to be used for this plugin. By order of preference:
 sub language
 {
     my $self = shift;
+    $self->{'.language'} ||= do {
+        my $default = $ENV{MKD__DEFAULT_LANGUAGE} || 'en';
+        my $lang    = $ENV{HTTP_ACCEPT_LANGUAGE} || '';
 
-    my $lang = $ENV{HTTP_ACCEPT_LANGUAGE};
-    if (defined $lang and $lang)
-    {
         $lang =~ s/^\s*//;
         $lang =~ s/,.*$//;
-    }
-    else
-    {
-        $lang = $ENV{MKD__DEFAULT_LANGUAGE} || 'en';
-    }
-
-    return new MKDoc::Core::Language ($lang);
+        
+        new MKDoc::Core::Language ( $lang ) || new MKDoc::Core::Language ( $default );
+    };
+    
+    return $self->{'.language'};
 }
 
 

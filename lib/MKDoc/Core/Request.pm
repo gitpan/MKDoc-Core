@@ -55,8 +55,8 @@ sub self_uri
     $opt{relative}  ||= 0;
 
     my $url  = $self->url (\%opt);
-    $url =~ s/(.*?\:\/\/(?:.*?\@)?)(.*):80(?!\d)(.*)/$1$2$3/
-        if ($url =~ /(.*?\:\/\/(?:.*?\@)?)(.*):80(?!\d)(.*)/);
+    $url =~ s/(.*?\:\/\/(?:.*?\@)?)(.*):80\d?\d?(?!\d)(.*)/$1$2$3/
+        if ($url =~ /(.*?\:\/\/(?:.*?\@)?)(.*):80\d?\d?(?!\d)(.*)/);
 
     return $url;
 }
@@ -79,6 +79,13 @@ sub param_eq
     return $param eq $value;
 }
 
+
+sub param_checked
+{
+    my $self  = shift;
+    my $param = $self->param (@_);
+    return $param ? 'checked' : undef;
+}
 
 
 =head2 $self->param_equals ($param_name, $param_value);

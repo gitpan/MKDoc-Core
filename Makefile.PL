@@ -12,6 +12,8 @@ WriteMakefile(
         'Cache::Cache'  => '1.02',
 	'URI'		=> '1.30',
         'Apache'        => '1.27',
+        'HTTP::Date'    => '1.46',
+        'Digest::MD5'   => '2.33',
     },
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'lib/MKDoc/Core.pm', # retrieve abstract from module
