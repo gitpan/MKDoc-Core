@@ -9,6 +9,9 @@ WriteMakefile(
         'Scalar::Util'  => '1.07',
         'File::Touch'   => '0.01',
         'Petal'         => '2.02',
+        'Cache::Cache'  => '1.02',
+	'URI'		=> '1.30',
+        'Apache'        => '1.27',
     },
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'lib/MKDoc/Core.pm', # retrieve abstract from module

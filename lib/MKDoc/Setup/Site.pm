@@ -5,7 +5,7 @@ MKDoc::Setup::Site - Installs a new MKDoc site somewhere on the system
 
 =head1 SYNOPSIS
 
-  perl -MMKDoc::Setup -e site
+  perl -MMKDoc::Setup -e install_site
 
 
 =head1 SUMMARY
@@ -58,7 +58,7 @@ use File::Touch;
 use base qw /MKDoc::Setup/;
 
 
-sub main::site
+sub main::install_site
 {
     $::SITE_DIR = shift (@ARGV);
     __PACKAGE__->new()->process();
@@ -222,12 +222,14 @@ sub install_directories
     -d "$SITE_DIR/httpd2" or mkdir "$SITE_DIR/httpd2" or die "Cannot create $SITE_DIR/httpd2";
     -d "$SITE_DIR/init"   or mkdir "$SITE_DIR/init"   or die "Cannot create $SITE_DIR/init";
     -d "$SITE_DIR/plugin" or mkdir "$SITE_DIR/plugin" or die "Cannot create $SITE_DIR/plugin";
+    -d "$SITE_DIR/cache"  or mkdir "$SITE_DIR/cache"  or die "Cannot create $SITE_DIR/plugin";
     -d $LOG_DIR           or mkdir $LOG_DIR           or die "Cannot create $LOG_DIR";
 
     chmod 0755, $SITE_DIR;
     chmod 0755, "$SITE_DIR/httpd";
     chmod 0755, "$SITE_DIR/httpd2";
     chmod 0755, $LOG_DIR;
+    chmod 0777, "$SITE_DIR/cache";
     print "OK\n";
 }
 

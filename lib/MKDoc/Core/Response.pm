@@ -11,6 +11,9 @@ It is not mandatory to use it, but it is quite nice and convenient.
 
 =cut
 package MKDoc::Core::Response;
+use Apache;
+use Apache::Constants qw/:common/;
+use MKDoc::Core::Request;
 use strict;
 use warnings;
 our $AUTOLOAD;
@@ -100,24 +103,19 @@ Returns the head of the HTTP query.
 sub HEAD
 {
     my $self = shift;
-
-    my @res  = ();
+    my $req  = MKDoc::Core::Request->instance();
+    
+    my %hash = ();
     my $status = $self->Status() || '200 OK';
-    push @res, "Status: $status";
+    $hash{'-status'} = $status;
+    
     foreach my $key (sort $self->header_keys())
     {
         my $val = $self->{$key};
-        my @val = ref $val ? @{$val} : $val;
-        next unless ($val);
-        foreach (@val)
-        {
-            push @res, "$key: $_";
-        }
+        $hash{"-$key"} = $val;
     }
-
-    my $res = join "\n", @res;
-    $res .= "\n\n";
-    return $res;
+    
+    return $req->header (%hash);
 }
 
 
@@ -211,8 +209,7 @@ sub AUTOLOAD
     }
     else
     {
-        use Carp;
-        confess qq |Can\'t locate object method "$meth" via package "$pkg"|;
+        die "Can't locate object method '$meth' via package '$pkg'";
     }
 }
 
@@ -237,7 +234,11 @@ sub out
         print $self->HEAD() :
         print $self->GET();
 
-
+    # explicitly tell Apache that we're done
+    $ENV{MOD_PERL} and do {
+        my $r = Apache->request();
+        $r->status (DONE);
+    }
 }
 
 

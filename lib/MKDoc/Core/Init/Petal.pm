@@ -15,7 +15,7 @@ sub init
     $Petal::ENCODE_CHARSET = 'utf8';
     $Petal::BASE_DIR = undef;
 
-    @Petal::BASE_DIR = (
+    @Petal::BASE_DIR = map { (-e $_ and -d $_) ? $_ : () } (
         $ENV{SITE_DIR}  . '/resources/templates',
         $ENV{MKDOC_DIR} . '/resources/templates',
         (map { "$_/MKDoc/templates" } @INC),

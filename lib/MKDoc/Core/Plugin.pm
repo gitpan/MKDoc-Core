@@ -19,6 +19,7 @@ use MKDoc::Core::Response;
 use MKDoc::Core::Language;
 use MKDoc::Core::Error;
 use Petal;
+use URI;
 use strict;
 use warnings;
 
@@ -176,10 +177,8 @@ sub main
     my $class = shift || return;
     my $self  = $class->new (@_);
     return ($self->activate) ? do {   
-        # set up the callback for errors
-        local $MKDoc::Error::CALLBACK;
-        $MKDoc::Error::CALLBACK = sub { $self->add_error (@_) };
-	
+        local $MKDoc::Core::Error::CALLBACK;
+        $::MKDoc::Core::Error::CALLBACK = sub { $self->add_error (@_) };
         $self->run();
     } : undef;
 }
@@ -283,8 +282,9 @@ sub activate
 
 =head2 $self->uri();
 
-By default, returns the URI of the current plugin without any parameters.
+By default, returns the L<URI> of the current plugin without any parameters.
 However, this behavior can be overriden as follows:
+
   # http://example.com/.plugin
   $plugin->uri();
   
@@ -301,65 +301,52 @@ However, this behavior can be overriden as follows:
 sub uri
 {
     my $self = shift;
-    my $cgix = $self->request->clone();
-    $self->_uri_set_cgix ($cgix, @_);
-    return $cgix->url ( -full => 1, -path => 1, -query => 1 );
-}
+    my $req  = $self->request->clone();
 
-
-
-=head2 $self->uri_absolute();
-
-Same as $self->uri(), except returns an absolute URI rather than a full URI.
-
-=cut
-sub uri_absolute
-{
-    my $self = shift;
-    my $cgix = $self->request->clone();
-    $self->_uri_set_cgix ($cgix, @_);
-    return $cgix->url ( -absolute => 1, -path => 1, -query => 1 );
-}
-
-
-
-=head2 $self->uri_relative();
-
-Same as $self->uri(), except returns a relative URI rather than a full URI.
-
-=cut
-sub uri_relative
-{
-    my $self = shift;
-    my $cgix = $self->request->clone();
-    $self->_uri_set_cgix ($cgix, @_);
-    return $cgix->url ( -relative => 1, -path => 1, -query => 1 );
-}
-
-
-sub _uri_set_cgix
-{
-    my $self = shift;
-    my $cgix = shift;
-    
     if (defined $_[0] and $_[0] eq 'parameters')
     {
         shift (@_);
     }
     else
     {
-        for ($cgix->param()) { $cgix->delete ($_) }
+        for ($req->param()) { $req->delete ($_) }
     }
 
     while (@_)
     {
         my $key = shift;
         my $val = shift;
-        $cgix->param ($key, $val);
+        $req->param ($key, "$val");
     }
 
-    $cgix->path_info ($self->location());
+    $req->path_info ($self->location());
+    return URI->new ( $req->url ( -full => 1, -path => 1, -query => 1 ) );
+}
 
+
+
+=head2 $self->uri_relative ($other);
+
+Same this object's URI relative to $other. $other can be a L<URI> object,
+a SCALAR representing a URI, or an object which MUST have a uri() method.
+
+=cut
+sub uri_relative
+{
+    my $self = shift;
+    my $other_uri = shift;
+
+    # if we already have a URI object, everything's good.
+    ref $other_uri and $other_uri->isa ('URI') and do {
+        return $self->uri()->rel ($other_uri);
+    };
+
+    # if we have some kind of object that's not a URI, use
+    # $object->uri()
+    ref $other_uri and return $self->uri_relative ($other_uri->uri());
+
+    # finally, we must have a scalar representing the URI...
+    return $self->uri_relative (URI->new ($other_uri));
 }
 
 
@@ -622,7 +609,8 @@ sub template_path
 {
     my $self  = shift;
     my $class = ref $self || $self;
-    $class =~ s/^.*::Plugin:://;
+    $class =~ s/MKDoc:://;
+    $class =~ s/Plugin:://;
     $class = lc ($class);
     $class =~ s/::/\//g;
     return "/$class/";
@@ -666,6 +654,35 @@ sub response
     return MKDoc::Core::Response->instance();
 }
 
+
+
+=head2 $self->return_uri();
+
+Some plugins have a need to redirect to a return uri once they have finished
+processing. This is usually the case with POST request. This method tries to
+provide a sensible default:
+
+=over 4
+
+=item it looks for a return_uri parameter
+
+=item otherwise it looks in $ENV{HTTP_REFERER}
+
+=item otherwise it returns the root of the website by setting path_info to '/'.
+
+=back
+
+=cut
+sub return_uri
+{
+    my $self = shift;
+    my $req  = $self->request()->clone();
+    return $req->param ('return_uri') || $ENV{HTTP_REFERER} || do {
+        $req->path_info ('/');
+        $req->delete ($_) for ($req->param());
+        $req->self_url();
+    };
+}
 
 
 1;

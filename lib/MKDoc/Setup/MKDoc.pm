@@ -5,7 +5,7 @@ MKDoc::Setup::MKDoc - Installs MKDoc framework somewhere on the system.
 
 =head1 SYNOPSIS
 
-  perl -MMKDoc::Setup -e mkdoc
+  perl -MMKDoc::Setup -e install_core
 
 
 =head1 SUMMARY
@@ -46,7 +46,7 @@ use File::Spec;
 use base qw /MKDoc::Setup/;
 
 
-sub main::mkdoc
+sub main::install_core
 {
 	$::MKDOC_DIR = shift (@ARGV);
 	__PACKAGE__->new()->process();
@@ -112,29 +112,11 @@ sub install
 
     print "\n\n";
     $self->install_mksetenv();
-    $self->install_empty_dot_txt();
     $self->install_httpd_conf();
     $self->install_mkdoc_cgi();
     $self->install_success();
     exit (0);
 }
-
-
-# this is a fix for Apache 1.3.x
-# which concatenates default error document with
-# custom error responses and PerlSendHeader On
-sub install_empty_dot_txt
-{
-    my $self = shift;
-    my $cur_dir = $self->{MKDOC_DIR};
-
-    open FP, ">$cur_dir/empty.txt" || die "Cannot create '$cur_dir/empty.txt'";
-    print FP " ";
-    close FP;
-
-    chmod 0644, "$cur_dir/empty.txt";
-}
-
 
 
 sub install_mksetenv

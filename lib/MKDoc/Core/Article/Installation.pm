@@ -43,7 +43,7 @@ First you need to choose a master directory for L<MKDoc::Core>, e.g.
 
 Then you need to run the MKDoc setup as follows:
 
-  perl -MMKDoc::Setup -e mkdoc /usr/local/mkdoc
+  perl -MMKDoc::Setup -e install_core /usr/local/mkdoc
 
 
 You will see a screen as follows:
@@ -87,7 +87,7 @@ Source your mksetenv.sh:
 
 Then issue the following command:
 
-  perl -MMKDoc::Setup -e site /var/www/mkdoc/example.com
+  perl -MMKDoc::Setup -e install_site /var/www/mkdoc/example.com
 
 You should see the following screen:
 
