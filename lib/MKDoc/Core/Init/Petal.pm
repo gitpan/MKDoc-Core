@@ -18,7 +18,8 @@ sub init
     @Petal::BASE_DIR = (
         $ENV{SITE_DIR}  . '/resources/templates',
         $ENV{MKDOC_DIR} . '/resources/templates',
-        map { "$_/MKDoc/templates" } @INC
+        (map { "$_/MKDoc/templates" } @INC),
+        (map { "$_/templates" } @INC)
     );
 }
 

@@ -36,48 +36,59 @@ use strict;
 use warnings;
 
 
-our %LANGUAGES = do {
+sub _mkd_core_languages
+{
+    $::MKD_CORE_LANGUAGES ||= do {
 
-    my ($conf) =
-        grep { -e $_ && -f $_ }
-	map { defined $_ ? "$_/MKDoc/Core/Language/languages.conf" : () }
-	        ($ENV{SITE_DIR}, $ENV{MKDOC_DIR}, @main::INC);
+        my ($conf) =
+            grep { -e $_ && -f $_ }
+	    map { defined $_ ? "$_/MKDoc/Core/Language/languages.conf" : () }
+	            ($ENV{SITE_DIR}, $ENV{MKDOC_DIR}, @main::INC);
 
-    open FP, "<:utf8", $conf;
-    my @res =
-        map {
-	    chomp ($_);
-	    s/#.*//;
-	    s/^\s+//;
-	    s/\s+$//;
-	    /\S\s+\S/ ? split /\s+/, $_, 2 : ()
-	} <FP>;
+        open FP, "<:utf8", $conf;
+        my %res =
+            map {
+	        chomp ($_);
+                s/#.*//;
+	        s/^\s+//;
+	        s/\s+$//;
+	        /\S\s+\S/ ? split /\s+/, $_, 2 : ()
+            } <FP>;
 
-    close FP;
-    @res;
-};
+        close FP;
+        \%res;
+    };
+
+    $::MKD_CORE_LANGUAGES;
+}
 
 
-our %LANGUAGES_RTL = do {
 
-    my ($conf) =
-        grep { -e $_ && -f $_ }
-	    map { defined $_ ? "$_/MKDoc/Core/Language/languages_rtl.conf" : () }
-	        ($ENV{SITE_DIR}, $ENV{MKDOC_DIR}, @main::INC);
+sub _mkd_core_languages_rtl
+{
+    $::MKD_CORE_LANGUAGES_RTL ||= do {
 
-    open FP, "<:utf8", $conf;
-    my @res =
-        map {
-	    chomp ($_);
-	    s/#.*//;
-	    s/^\s+//;
-	    s/\s+$//;
-	    /\S\s+\S/ ? split /\s+/, $_, 2 : ()
-	} <FP>;
+        my ($conf) =
+            grep { -e $_ && -f $_ }
+	        map { defined $_ ? "$_/MKDoc/Core/Language/languages_rtl.conf" : () }
+	            ($ENV{SITE_DIR}, $ENV{MKDOC_DIR}, @main::INC);
 
-    close FP;
-    @res;
-};
+        open FP, "<:utf8", $conf;
+        my %res =
+            map {
+	        chomp ($_);
+	        s/#.*//;
+	        s/^\s+//;
+	        s/\s+$//;
+	        /\S\s+\S/ ? split /\s+/, $_, 2 : ()
+	    } <FP>;
+
+        close FP;
+        \%res;
+    };
+
+    $::MKD_CORE_LANGUAGES_RTL;
+}
 
 
 
@@ -94,10 +105,64 @@ sub new
 {
     my $class = shift;
     my $lang  = shift;
-    $LANGUAGES{$lang} || return;
+    $::MKD_CORE_LANGUAGES || _mkd_core_languages();
+    $::MKD_CORE_LANGUAGES->{$lang} || return;
     return bless \$lang, $class;
 }
 
+
+=head2 $class->as_hash();
+
+Returns a hash as follows:
+
+  ( $iso_code_1 => $label_1,
+    $iso_code_2 => $label_2,
+    $iso_code_3 => $label_3,
+    ...
+    $iso_code_4 => $label_4 )
+
+For all languages.
+
+=cut
+sub as_hash
+{
+   my $class = shift;
+   my @list  = $class->code_list();
+   my %res   = map {
+	my $language = MKDoc::Core::Language->new ($_);
+	( $language->code() => $language->label() );
+    } @list;
+
+    return wantarray ? %res : \%res;
+}
+
+
+=head2 $class->as_hash_rtl();
+
+Returns a hash as follows:
+
+  ( $iso_code_1 => $label_1,
+    $iso_code_2 => $label_2,
+    $iso_code_3 => $label_3,
+    ...
+    $iso_code_4 => $label_4 )
+
+For RTL languages.
+
+=cut
+sub as_hash_rtl
+{
+   my $class = shift;
+   my @list  = $class->code_list();
+   my %res   = map {
+	my $language = MKDoc::Core::Language->new ($_);
+	$language->dir() eq 'rtl' ?
+	    ( $language->code() => $language->label() ) :
+	    ()
+    } @list;
+    
+    return wantarray ? %res : \%res;
+}
 
 
 =head2 $self->code();
@@ -128,7 +193,8 @@ sub label
 {
     my $self = shift;
     my $code = $self->code;
-    return $LANGUAGES{$code};
+    $::MKD_CORE_LANGUAGES || _mkd_core_languages();
+    $::MKD_CORE_LANGUAGES->{$code};
 }
 
 
@@ -141,7 +207,9 @@ value of their associated label.
 =cut
 sub code_list
 {
-    return sort { $LANGUAGES{$a} cmp $LANGUAGES{$b} } keys %LANGUAGES;
+    $::MKD_CORE_LANGUAGES || _mkd_core_languages();
+    return sort { $::MKD_CORE_LANGUAGES->{$a} cmp $::MKD_CORE_LANGUAGES->{$b} }
+           keys %{$::MKD_CORE_LANGUAGES};
 }
 
 
@@ -160,7 +228,8 @@ sub align
 {
     my $self = shift;
     my $code = $self->code;
-    return $LANGUAGES_RTL{$code} ? 'right' : 'left';
+    $::MKD_CORE_LANGUAGES_RTL || _mkd_core_languages_rtl();
+    return $::MKD_CORE_LANGUAGES_RTL->{$code} ? 'right' : 'left';
 }
 
 
@@ -181,7 +250,8 @@ sub align_opposite
 {
     my $self = shift;
     my $code = $self->code;
-    return $LANGUAGES_RTL{$code} ? 'left' : 'right';
+    $::MKD_CORE_LANGUAGES_RTL || _mkd_core_languages_rtl();
+    return $::MKD_CORE_LANGUAGES_RTL()->{$code} ? 'left' : 'right';
 }
 
 
@@ -200,7 +270,8 @@ sub dir
 {
     my $self = shift;
     my $code = $self->code;
-    return $LANGUAGES_RTL{$code} ? 'rtl' : 'ltr';
+    $::MKD_CORE_LANGUAGES_RTL || _mkd_core_languages_rtl();
+    return $::MKD_CORE_LANGUAGES_RTL->{$code} ? 'rtl' : 'ltr';
 }
 
 

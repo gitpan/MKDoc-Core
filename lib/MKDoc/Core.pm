@@ -48,11 +48,12 @@ of them returns the string 'TERMINATE'.
 =cut
 package MKDoc::Core;
 use MKDoc::Core::Init;
+use MKDoc::Core::Language;
 use strict;
 use warnings;
 
 
-our $VERSION = '0.1';
+our $VERSION = '0.2';
 
 
 sub process
@@ -87,11 +88,21 @@ sub plugin_list
 {
     my $class = shift;
     $::MKD_Plugin_List ||= do {
-        opendir DD, $ENV{SITE_DIR} . '/plugin';
-        my @files = sort grep /^\d\d\d\d\d_/, readdir (DD);
-        closedir DD;
 
-        [ map { s/^\d\d\d\d\d_//; $_ } @files ];
+        # this is for backwards compatibility with MKDoc 1.6
+        if (defined $ENV{MKD__PLUGIN_LIST})
+        {
+            eval "use MKDoc::Config";
+            my @plugin = MKDoc::Config->config_lines ( MKDoc::Config->PLUGIN_LIST );
+            \@plugin;
+        }
+        else
+        {
+            opendir DD, $ENV{SITE_DIR} . '/plugin';
+            my @files = sort grep /^\d\d\d\d\d_/, readdir (DD);
+            closedir DD;
+            [ map { s/^\d\d\d\d\d_//; $_ } @files ];
+        }
     };
 
     return @{$::MKD_Plugin_List};

@@ -1,5 +1,10 @@
 Revision history for MKDoc::Core 
 
+0.2 Thu Mar 18 14:16:49 2004
+    - Fixed some MKDoc::Core::Language issues
+    - Added a couple of methods in MKDoc::Core::Language
+    - Added code to ease backwards compatiblity with mkdoc 1.6
+
 0.1 Thu Mar 11 17:40:42 2004
     - Changed MKDoc 2.02 to MKDoc::Core 0.1
     - Fixed numerous documentation issues
