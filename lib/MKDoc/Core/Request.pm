@@ -17,7 +17,7 @@ package MKDoc::Core::Request;
 use strict;
 use warnings;
 use base qw /CGI/;
-
+use Encode;
 
 
 =head1 API
@@ -159,6 +159,13 @@ sub delete
 }
 
 
+sub delete_all_fast
+{
+    my $self = shift;
+    $self->{'.parameters'} = [];
+}
+
+
 =head2 $self->is_upload ($param_name);
 
 Returns TRUE if $param_name is an upload, FALSE otherwise.
@@ -173,60 +180,27 @@ sub is_upload
 }
 
 
-# WARNING! For some reason, the incoming UTF-8 strings
-# are not internally marked up as UTF-8 when they should...
 sub param
 {
-    my $self = shift;
-    return $self->SUPER::param (@_) if ($self->is_upload (@_));
+    my $self  = shift;
+    my $key   = shift || return $self->SUPER::param ();
 
-    if (wantarray)
-    {
-        my @res = $self->SUPER::param (@_);
-        foreach my $element (@res)
-        {
-            if (defined $element)
-            {
-                my $tmp = Encode::decode ('UTF-8', $element);
-                if (defined $tmp)
-                {
-                    $element = $tmp;
-                }
-            }
-        }
+    $self->is_upload ($key => @_) and return $self->SUPER::param ($key => @_);
+    @_                            and return $self->SUPER::param ($key => @_);
 
-        return @res;
-    }
-    else
-    {
-        my $res = $self->SUPER::param (@_);
-        if (ref $res and ref $res eq 'ARRAY')
-        {
-            foreach my $element (@{$res})
-            {
-                if (defined $_)
-                {
-                    my $tmp = Encode::decode ('UTF-8', $element);
-                    if (defined $tmp)
-                    {
-                        $element = $tmp;
-                        Encode::_utf8_on ($element);
-                    }
-                }
-            }
-        }
-        else
-        {
-            my $tmp = Encode::decode ('UTF-8', $res);
-            if (defined $tmp)
-            {
-                $res = $tmp;
-                Encode::_utf8_on ($res);
-            }
-        }
+    my @res = $self->SUPER::param ($key);
+    @res = map {
+        (defined $_) ? do {
+            my $res = $_;
+            my $octets = $_;
+            my $string = Encode::decode_utf8 ($octets, Encode::FB_PERLQQ);
+            $string;
+        } : undef
+    } @res;
 
-        return $res;
-    }
+    @res == 0 and return;
+    @res == 1 and return shift @res;
+    return wantarray ? @res : \@res;
 }
 
 

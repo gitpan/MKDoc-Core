@@ -92,7 +92,7 @@ use strict;
 use warnings;
 
 
-our $VERSION = '0.7';
+our $VERSION = '0.8';
 
 
 sub process

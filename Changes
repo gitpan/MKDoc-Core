@@ -1,5 +1,10 @@
 Revision history for MKDoc::Core 
 
+0.8 Mon Aug  9 12:47:55 2004
+    - Added MKDoc::Core::Request::delete_all_fast()
+    - Updated MKDoc::Core::Request::param()
+    - Added MKDoc::Core::Language 'eq' overload magic
+
 0.7 Sun Jul 18 19:42:57 2004
     - Added a list() subroutine in MKDoc::Core::ResourceFinder
     - Documented MKDoc::Core::ResourceFinder

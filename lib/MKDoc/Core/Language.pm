@@ -35,8 +35,8 @@ package MKDoc::Core::Language;
 use strict;
 use warnings;
 use overload
-    '""' => \&as_string;
-
+    '""' => \&as_string,
+    'eq' => \&equals;
 
 sub as_string
 {
@@ -44,6 +44,13 @@ sub as_string
     return $self->code();
 }
 
+sub equals
+{
+    my $self = shift;
+    my $what = shift;
+    my $code = $self->code();
+    return $code eq $what;
+}
 
 sub _mkd_core_languages
 {
