@@ -536,7 +536,7 @@ sub render
     $Petal::OUTPUT       = $hash->{__output__} || 'XML';
 
     my $template = new Petal
-        language => $self->language(),
+        language => $self->language()->code(),
         file     => $self->template_path();
 
     my $data = $template->process ( @_ );

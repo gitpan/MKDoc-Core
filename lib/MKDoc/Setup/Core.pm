@@ -1,45 +1,75 @@
 =head1 NAME
 
-MKDoc::Setup::MKDoc - Installs MKDoc framework somewhere on the system.
+MKDoc::Setup::Core - Deploys MKDoc::Core master directory.
 
 
 =head1 SYNOPSIS
 
-  perl -MMKDoc::Setup -e install_core
+  perl -MMKDoc::Setup -e install_core /usr/local/mkdoc-core
 
 
 =head1 SUMMARY
 
-L<MKDoc::Core> is an application framework which aims at supporting easy installation
-and management of multiple MKDoc products (such as MKDoc::Authenticate, MKDoc::Authorize,
-MKDoc::CMS, MKDoc::Forum, etc) onto multiple virtual hosts / websites.
+L<MKDoc::Core> is an application framework which aims at supporting easy-ish
+installation and management of multiple MKDoc products onto multiple virtual
+hosts / websites.
 
-Before you can install MKDoc sites, you need to install L<MKDoc::Core> in a master directory
-where the software can maintain various default configuration files and other things.
-You only need to do this once.
-
-
-=head1 AUTHOR
-
-Copyright 2003 - MKDoc Holdings Ltd.
-
-Author: Jean-Michel Hiver <jhiver@mkdoc.com>
-
-This module is free software and is distributed under the same license as Perl
-itself. Use it at your own risk.
+Before you can install L<MKDoc::Core> sites, you need to install L<MKDoc::Core>
+in a master directory where the software can maintain various default
+configuration files and other things. You only need to do this once.
 
 
-=head1 SEE ALSO
+=head1 PRE-REQUISITES
 
-  Petal: http://search.cpan.org/author/JHIVER/Petal/
-  MKDoc: http://www.mkdoc.com/
+=over 4
 
-Help us open-source MKDoc. Join the mkdoc-modules mailing list:
+=item Perl 5.8.0 or greater
 
-  mkdoc-modules@lists.webarch.co.uk
+=item Apache + mod_perl
+
+=item A decent Unix/Linux system.
+
+=back
+
+
+=head1 SETTING UP
+
+First you need to choose a master directory for L<MKDoc::Core>, e.g.
+
+  /usr/local/mkdoc-core
+
+It is not necessary to be root in order to install MKDoc::Core, so it would be
+appropriate to create this directory as root and then change the permissions to
+an unprivileged user.
+
+
+Then you need to run the MKDoc::Core setup as follows:
+
+  perl -MMKDoc::Setup -e install_core /usr/local/mkdoc-core
+
+
+The screen will look like this:
+
+  1. MKDoc Directory        /usr/local/mkdoc-core
+
+  D. Delete an option
+
+  I. Install with the options above
+  C. Cancel installation
+
+
+Press 'i' and enter to proceed. Once this is done, provided there were no
+errors you should add the following line in your httpd.conf file:
+
+  NameVirtualHost *
+  Include /usr/local/mkdoc-core/conf/httpd.conf
+
+If everything went OK, you should immediately proceed to installing your first
+L<MKDoc::Core> site. Consult L<MKDoc::Setup::Site> for details on how to do
+this.
 
 =cut
-package MKDoc::Setup::MKDoc;
+package MKDoc::Setup::Core;
 use strict;
 use warnings;
 use File::Spec;

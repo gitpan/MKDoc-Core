@@ -17,6 +17,7 @@ MKDoc::Core::FileCache - Cache::FileCache wrapper for MKDoc::Core
 
 =cut
 package MKDoc::Core::FileCache;
+use MKDoc::Core;
 use Cache::FileCache;
 use strict;
 use warnings;
@@ -26,9 +27,11 @@ sub instance
 {
     my $class = shift || return;
     my $cache = shift || return;
-    -d "$ENV{SITE_DIR}/cache" or mkdir "$ENV{SITE_DIR}/cache" or die "No $ENV{SITE_DIR}/cache";
+    my $dir   = MKDoc::Core::site_dir();
+
+    -d "$dir/cache" or mkdir "$dir/cache" or die "No $dir/cache";
     return new Cache::FileCache ( {
-        cache_root => "$ENV{SITE_DIR}/cache",
+        cache_root => "$dir/cache",
         namespace => $cache,
     } );
 }

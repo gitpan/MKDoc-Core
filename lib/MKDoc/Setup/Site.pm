@@ -5,49 +5,76 @@ MKDoc::Setup::Site - Installs a new MKDoc site somewhere on the system
 
 =head1 SYNOPSIS
 
-  perl -MMKDoc::Setup -e install_site
+  perl -MMKDoc::Setup -e install_site /var/www/example.com
 
 
 =head1 SUMMARY
 
-L<MKDoc::Core> is an application framework which aims at supporting easy installation
-and management of multiple MKDoc products (such as MKDoc::Authenticate, MKDoc::Authorize,
-MKDoc::CMS, MKDoc::Forum, etc) onto multiple virtual hosts / websites.
+L<MKDoc::Core> is an application framework which aims at supporting easy-ish
+installation of multiple products onto multiple virtual hosts / websites.
 
-Once you have installed the MKDoc master directory using L<MKDoc::Setup::MKDoc>, you
-can add additional sites using this setup modules. The newly created sites won't do
-much by default.
-
-This module installs a new site in a given directory, deploys all the Apache config
-files and adds the $ENV{SITE_DIR}/httpd.conf as an include to
-$ENV{MKDOC_DIR}/conf/httpd.conf.
-
-Once you have finished installing the site you need to restart apache, make sure the
-site's domain name is installed in your DNS server or your hosts file, and it should
-all work fine.
-
-Once you have seen the site's 'It Worked' message you can start adding extra MKDoc
-products on the site.
+Once you have installed the MKDoc master directory using L<MKDoc::Setup::Core>,
+you can add additional sites using this setup module.
 
 
-=head1 AUTHOR
+=head1 PRE-REQUISITES
 
-Copyright 2003 - MKDoc Holdings Ltd.
+First, you need to make sure that you have deployed the L<MKDoc::Core> master
+repository using L<MKDoc::Setup::Core>.
 
-Author: Jean-Michel Hiver <jhiver@mkdoc.com>
+Then, you need a domain name which points to the IP address of the machine on
+which you are setting up the new site. If you have no domain name, you can add
+one temporarily in your /etc/hosts file.
 
-This module is free software and is distributed under the same license as Perl
-itself. Use it at your own risk.
+Finally, you need to choose a directory in which your L<MKDoc::Core> site is
+going to live.
+
+For the sake of the example, we'll assume that we are using a domain called
+'www.example.com' which will live in /var/www/example.com.
+
+Note that you do not need to be root to install a new site. It would be best if
+you created /var/www/example.com as root and then changed the ownership to an
+unprivileged user.
 
 
-=head1 SEE ALSO
+=head1 SETTING UP
 
-  Petal: http://search.cpan.org/author/JHIVER/Petal/
-  MKDoc: http://www.mkdoc.com/
+First there is a file in your mkdoc-core directory called 'mksetenv.sh'. You
+need to source this file.
 
-Help us open-source MKDoc. Join the mkdoc-modules mailing list:
+  source /usr/local/mkdoc-core/mksetenv.sh
 
-  mkdoc-modules@lists.webarch.co.uk
+Then run the following command:
+
+  perl -MMKDoc::Setup -e install_site /var/www/example.com
+
+You should see the following screen:
+
+  1. MKDoc Directory        /usr/local/mkdoc
+  2. Site Directory         /var/www/mkdoc/example.com
+  3. Server Name            www.example.com
+  4. Log Directory          /var/www/mkdoc/example.com/log
+  5. Domain Admin Email     tech@example.com
+
+  D. Delete an option
+
+  I. Install with the options above
+  C. Cancel installation
+
+  Input your choice:
+
+Make sure that everything's OK and press 'i' to install the site.
+
+Restart Apache:
+
+  /usr/local/apache/bin/apachectl restart
+
+Point your web browser to http://www.example.com/. If you see a page
+which says 'it worked!' then congratulations, you have installed a
+minimal L<MKDoc::Core> site.
+
+If you so wish, you can now install more interesting modules such as
+L<MKDoc::Auth> or L<MKDoc::Forum>.
 
 =cut
 package MKDoc::Setup::Site;
@@ -356,6 +383,7 @@ sub install_plugins
     touch ("$SITE_DIR/init/10000_MKDoc::Core::Init::Petal");
 
     # plugins
+    touch ("$SITE_DIR/plugin/20000_MKDoc::Core::Plugin::Resources");
     touch ("$SITE_DIR/plugin/85000_MKDoc::Core::Plugin::It_Worked");
     touch ("$SITE_DIR/plugin/90000_MKDoc::Core::Plugin::Not_Found");
     print "OK\n";

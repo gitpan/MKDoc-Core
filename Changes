@@ -1,5 +1,13 @@
 Revision history for MKDoc::Core 
 
+0.4 Fri Apr 16 13:02:38 2004
+    - Added MKDoc::Core::site_dir()
+    - Added MKDoc::Core::core_dir()
+    - Added support for resources
+    - Added logo as a resource
+    - Added style sheet as a resource
+    - Added mime.types resource file
+
 0.3 Thu Apr  1 17:07:13 2004 
     - Changed the uri() and uri_relative() methods now use URI.pm
     - Changed the default template pathes for plugins

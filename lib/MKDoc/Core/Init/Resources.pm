@@ -1,9 +1,9 @@
 =head1 NAME
 
-MKDoc::Core::Init::Petal - Initializes Petal base directories.
+MKDoc::Core::Init::Resources - Initializes Resources base directories.
 
 =cut
-package MKDoc::Core::Init::Petal;
+package MKDoc::Core::Init::Resources;
 use warnings;
 use strict;
 use Petal;
@@ -11,15 +11,12 @@ use Petal;
 
 sub init
 {
-    $Petal::DECODE_CHARSET = 'utf8';
-    $Petal::ENCODE_CHARSET = 'utf8';
-    $Petal::BASE_DIR = undef;
-
-    @Petal::BASE_DIR = map { -d $_ ? $_ : () } (
-        $ENV{SITE_DIR}  . '/resources/templates',
-        $ENV{MKDOC_DIR} . '/resources/templates',
-        (map { "$_/MKDoc/resources/templates" } @INC ),
-    );
+    $::MKD_RESOURCES_DIR = [
+        map { -d $_ ? $_ : () }
+          ( $ENV{SITE_DIR}  . '/resources',
+            $ENV{MKDOC_DIR} . '/resources',
+            (map { "$_/MKDoc/resources" } ) )
+    ];
 }
 
 

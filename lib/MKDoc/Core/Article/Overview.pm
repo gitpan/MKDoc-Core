@@ -20,11 +20,10 @@ added, the codebase increases a bit more.
 
 Separation between various system components is sometimes a bit blurry.
 
-Although MKDoc is not at the stage of "unworkable spaghetti code that needs
-to be thrown away", there is quite a fair bit of cleanup / refactoring to be
-done.
+Although MKDoc is not at the stage of "unworkable spaghetti code which needs to
+be thrown away", there is quite a fair bit of cleanup / refactoring to be done.
 
-L<MKDoc::Core> is part of a double effort:
+The two main goals of L<MKDoc::Core> are to:
 
 =over
 
@@ -41,13 +40,13 @@ L<MKDoc::Core> is part of a double effort:
 L<MKDoc::Core> is a mod_perl friendly application framework in which web applications
 can be written.
 
-Rather than re-writing L<MKDoc::Core> from scratch, we have done the following:
+Rather than writing L<MKDoc::Core> from scratch, the following has been done:
 
 =over
 
-=item take the existing MKDoc code
+=item Take the existing MKDoc code
 
-=item Remove all functionality
+=item Remove all user functionality
 
 =item See what is remaining
 
@@ -67,7 +66,8 @@ L<MKDoc::Core> comes with L<MKDoc::Core::Setup>, an easily subclassable module
 which provides a standard installation procedure for MKDoc software packages.
 
 L<MKDoc::Core> aims at providing an easy installation procedure - or at least
-easier than other server-side OSS packages such as RT, Slash or Bugzilla.
+easier than other server-side OSS packages such as RT, Slash or Bugzilla. Well.
+Maybe :)
 
 
 =head2 A pluggable chain of responsiblity.
@@ -93,7 +93,7 @@ around too much with Apache config files.
 
 The way it works is that whenever you install a new site, it creates httpd.conf
 files in the site directory which are included the the master directory's
-httpd.conf file.  All you need to do once you install a new site is restart
+httpd.conf file. All you need do once you have installed a new site is restart
 apache.
 
 
@@ -102,14 +102,14 @@ apache.
 By default plugin use L<Petal> templates which are stored along with the code
 somewhere in @INC/MKDoc/templates.
 
-When you install L<MKDoc>, you have to create a master directory in which you
-can define server-wide defaults for all your L<MKDoc> sites. For example you
-can redefine a template in the L<MKDoc::Core> master directory and all your
-L<MKDoc::Core> sites will use this default.
+When you install L<MKDoc::Core>, you have to create a master directory in which
+you can define server-wide defaults for all your L<MKDoc::Core> sites. For
+example you can redefine a template in the L<MKDoc::Core> master directory and
+all your L<MKDoc::Core> sites will use this default.
 
 When you install an L<MKDoc::Core> site, you can customize further at the site
-level (as opposed to server-wide level). This means that MKDoc products offer
-three degrees of customization:
+level (as opposed to server-wide level). This means that MKDoc::Core products
+offer three degrees of customization:
 
 =over
 
@@ -161,30 +161,35 @@ easily and correctly format your HTTP responses.
 
 L<MKDoc::Core> on its own does I<nuthin'>
 
-However we are in the process of un-entangling our code base, which over time we
-will provide the following exciting software products:
+The following products have been written completed:
 
 
+=head2 L<MKDoc::Auth>
 
-=head2 MKDoc::Auth
-
-This product will provide:
+This MKDoc product provides:
 
 =over
-
-=item User management facilities
 
 =item User signup / signout with customizable email confirmation
 
 =item Apache authentication handlers
 
-=item Possibly remote authentication mechanisms & handlers
+=item Login / Logout / Log as somebody else
 
 =back
 
 
+=head2 L<MKDoc::Forum>
 
-=head2 MKDoc::Authz
+This MKDoc product provides IMAP based, threaded discussion forums. It can be
+used with any authentication mechanisms and works "out of the box" with
+L<MKDoc::Auth>.
+
+
+The following products need doing:
+
+
+=head2 L<MKDoc::Authz>
 
 This MKDoc product will provide:
 
@@ -194,44 +199,18 @@ This MKDoc product will provide:
 
 =item Apache authentication handlers
 
-=item Possibly some kind of web interface
+=item Some kind of web interface for administration
 
 =back
 
 
+=head2 L<MKDoc::CMS>
 
-=head2 MKDoc::Forum
-
-This MKDoc product will provide IMAP based, threaded discussion forums.
-
-
-
-=head2 MKDoc::CMS
-
-This MKDoc product will provide the functionality presently offered by
-MKDoc 1.6, our commercial content management system. Minus MKDoc::Forum
-which will be a separate product.
+This MKDoc product will provide the functionality presently offered by MKDoc
+1.6, our proprietary content management system - Minus MKDoc::Forum which is
+now a separate product.
 
 See http://mkdoc.com/ for details.
 
-
-=head1 AUTHOR
-
-Copyright 2003 - MKDoc Holdings Ltd.
-
-Author: Jean-Michel Hiver <jhiver@mkdoc.com>
-
-This module is free software and is distributed under the same license as Perl
-itself. Use it at your own risk.
-
-
-=head1 SEE ALSO
-
-  Petal: http://search.cpan.org/author/JHIVER/Petal/
-  MKDoc: http://www.mkdoc.com/
-
-Help us open-source MKDoc. Join the mkdoc-modules mailing list:
-
-  mkdoc-modules@lists.webarch.co.uk
 
 =cut

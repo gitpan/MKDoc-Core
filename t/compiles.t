@@ -36,7 +36,7 @@ ok (not $@);
 eval "use MKDoc::Setup";
 ok (not $@);
 
-eval "use MKDoc::Setup::MKDoc";
+eval "use MKDoc::Setup::Core";
 ok (not $@);
 
 eval "use MKDoc::Setup::Site";
